@@ -1,0 +1,3 @@
+interface FirePattern {
+    fun fire()
+}
