@@ -8,4 +8,3 @@ val player = Player()
 val cannons = ArrayList<Cannon>()
 var timer = 0
 var mouse = Point(0, 0)
-var pmouse = Point(0, 0)

@@ -1,5 +1,3 @@
-import gameElements.Bullet
-import gameElements.Cannon
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -7,7 +5,6 @@ import java.awt.RenderingHints
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JPanel
-import kotlin.random.Random
 
 class Drawer: JPanel() {
     init {
@@ -24,17 +21,6 @@ class Drawer: JPanel() {
             }
         })
         background = Color.BLACK
-        val c = Cannon(100, 100)
-        c.firePatterns.add lambda@{
-            if (timer % 60 != 0) return@lambda
-            val bull = Array(5) { Bullet(100, 100) }
-            for (i in bull.indices) {
-                i.toFloat()
-                bull[i].velocity = Point(Random.nextInt(-5, 5), Random.nextInt(-5, 5))
-            }
-            bullets.addAll(bull)
-        }
-        cannons.add(c)
     }
 
     override fun paintComponent(g: Graphics?) {

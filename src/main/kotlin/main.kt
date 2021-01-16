@@ -3,7 +3,7 @@ import javax.swing.JFrame
 
 val mainFrame = Frame()
 fun main() {
-
+    initCannons()
 }
 
 class Frame: JFrame() {

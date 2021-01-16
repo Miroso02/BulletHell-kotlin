@@ -6,4 +6,6 @@ class Point(var x: Float, var y: Float) {
     operator fun unaryMinus() = Point(-x, -y)
     operator fun plus(p: Point) = Point(x + p.x, y + p.y)
     operator fun minus(p: Point) = this + -p
+    operator fun times(s: Float) = Point(x * s, y * s)
+    override fun toString() = "$x $y"
 }
