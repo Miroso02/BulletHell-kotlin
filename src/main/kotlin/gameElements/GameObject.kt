@@ -14,9 +14,9 @@ abstract class GameObject(var position: Point) {
     var y: Float
         get() = position.y
         set(value) { position.y = value }
-    constructor(x: Int, y: Int): this(Point(x, y))
 
     abstract fun display(g: Graphics2D)
+    abstract fun move()
 
     fun collides(obj: GameObject): Boolean {
         val (x, y) = obj.position - position
