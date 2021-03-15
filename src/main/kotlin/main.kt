@@ -10,8 +10,8 @@ class Frame: JFrame() {
     init {
         add(Drawer())
         background = Color.BLACK
-        setSize(800, 600)
-        title = "gameElements.Bullet hell"
+        setSize(1500, 1000)
+        title = "Bullet hell"
         defaultCloseOperation = EXIT_ON_CLOSE
         isVisible = true
     }

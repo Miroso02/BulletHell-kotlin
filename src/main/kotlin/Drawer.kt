@@ -10,14 +10,9 @@ class Drawer: JPanel() {
     init {
         addMouseMotionListener(object: MouseAdapter() {
             override fun mouseMoved(e: MouseEvent?) {
-                if (e == null) return
-                if (mouse.x == 0f)
-                    mouse = Point(e.point.x, e.point.y)
-                else {
-                    val curPosition = Point(e.point.x, e.point.y)
-                    player.position = curPosition
-                    mouse = curPosition
-                }
+                if (e == null || player.isDead) return
+                val curPosition = Point(e.point.x, e.point.y)
+                player.position = curPosition
             }
         })
         background = Color.BLACK
@@ -25,14 +20,7 @@ class Drawer: JPanel() {
 
     override fun paintComponent(g: Graphics?) {
         (g as Graphics2D).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF)
-        bullets.forEach { it.move(); it.display(g) }
-        cannons.forEach { it.fire(); it.display(g) }
-        bullets.removeAll { it.isOffScreen() }
-        player.display(g)
-        player.fire()
-        playerBullets.forEach { it.move(); it.display(g) }
-        playerBullets.removeAll { it.isOffScreen() }
+        updateScreen(g)
         mainFrame.repaint()
-        timer++
     }
 }
