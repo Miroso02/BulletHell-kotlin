@@ -5,10 +5,14 @@ import java.awt.Color
 import java.awt.Graphics2D
 
 class Bullet(position: Point = Point(0, 0)): GameObject(position) {
-    constructor(x: Int, y: Int): this(Point(x, y))
-
     init {
         color = Color.RED
+    }
+
+    // TODO: Implement GameObject's move() (or remove it)
+    // TODO: Save index in bullet
+    fun move(i: Int) {
+        movePattern(this, i)
     }
 
     override fun display(g: Graphics2D) {
