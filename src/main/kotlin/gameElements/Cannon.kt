@@ -1,7 +1,6 @@
 package gameElements
 
 import Point
-import player
 import java.awt.Color
 import java.awt.Graphics2D
 
@@ -9,6 +8,7 @@ open class Cannon(position: Point = Point(0, 0)): GameObject(position) {
     var health = 100
     var isDead = false
     private val firePatterns = ArrayList<FirePattern>()
+    // TODO: Maybe rewrite logic of storing bullets
     val bullets = HashMap<FirePattern, ArrayList<Bullet>>()
 
     constructor(x: Int, y: Int): this(Point(x, y))
@@ -23,7 +23,7 @@ open class Cannon(position: Point = Point(0, 0)): GameObject(position) {
     }
 
     open fun update(g: Graphics2D) {
-        if (health <= 0) isDead = true
+        if (health <= 0) this.isDead = true
         if (!isDead) {
             fire()
             display(g)
@@ -34,8 +34,8 @@ open class Cannon(position: Point = Point(0, 0)): GameObject(position) {
                 with(b) {
                     display(g)
                     move()
-                    if (collides(player))
-                        player.isDead = true
+                    if (collides(Player))
+                        Player.isDead = true
                 }
             }
         }
@@ -54,8 +54,6 @@ open class Cannon(position: Point = Point(0, 0)): GameObject(position) {
         g.rect(position, size)
         g.drawString("$health", x, y)
     }
-
-    override fun move() {}
 
     private fun Graphics2D.rect(position: Point, size: Int) {
         val (x, y) = position - Point(size / 2, size / 2)

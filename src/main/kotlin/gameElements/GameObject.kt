@@ -1,7 +1,7 @@
 package gameElements
 
 import Point
-import mainFrame
+import MainFrame
 import timer
 import java.awt.Color
 import java.awt.Graphics2D
@@ -11,26 +11,27 @@ abstract class GameObject(var position: Point) {
     var color: Color = Color.WHITE
     var x: Float
         get() = position.x
-        set(value) { position.x = value }
+        set(value) {
+            position.x = value
+        }
     var y: Float
         get() = position.y
-        set(value) { position.y = value }
+        set(value) {
+            position.y = value
+        }
     var movePattern = MovePattern().then(3000, moveForward)
     var velocity = Point(0, 0)
-    var accel: Point = Point(0, 0)
+    var accel = Point(0, 0)
     val createTime = timer
+    var curMovFuncInd = 0
 
     abstract fun display(g: Graphics2D)
+
+    //TODO: remove?
     open fun move() {
         movePattern(this)
     }
 
-    fun collides(obj: GameObject): Boolean {
-        val (x, y) = obj.position - position
-        val sumSize = size + obj.size
-        return x * x + y * y < sumSize * sumSize / 4
-    }
-    fun isOffScreen(): Boolean {
-        return x > mainFrame.size.width || x < 0 || y > mainFrame.size.height || y < 0
-    }
+    fun collides(obj: GameObject): Boolean = (obj.position - position).mag() < (size + obj.size) / 2
+    fun isOffScreen(): Boolean = x > MainFrame.size.width || x < 0 || y > MainFrame.size.height || y < 0
 }

@@ -2,32 +2,29 @@ package gameElements
 
 import timer
 
-class MovePattern {
-    private val fns = LinkedHashMap<Int, (GameObject, Int) -> Unit>()
+// TODO: Make it generic (?)
+open class MovePattern {
+    private val fns = KeyOrderedHashMap()
     operator fun invoke(obj: GameObject, i: Int) {
-        for ((time, fn) in fns) {
-            if (timer - obj.createTime < time) {
-                fn(obj, i)
-                break
-            }
+        val endOfCurFn = fns.nextKey(obj.curMovFuncInd)
+        if (timer - obj.createTime > endOfCurFn) {
+            obj.curMovFuncInd = endOfCurFn
         }
+        fns[endOfCurFn]?.invoke(obj, i)
     }
+
     operator fun invoke(obj: GameObject) = this(obj, 0)
 
     fun then(time: Int, f: (GameObject, Int) -> Unit) =
-        MovePattern().also { it.fns.putAll(fns); it.fns[(fns.lastKey() ?: 0) + time] = f }
-    fun then(time: Int, f: (GameObject) -> Unit) =
-        MovePattern().also { it.fns.putAll(fns); it.fns[(fns.lastKey() ?: 0) + time] = { obj, _ -> f(obj) } }
-    fun then(mp: MovePattern) =
-        MovePattern().also {
-            it.fns.putAll(fns)
-            val last = fns.lastKey() ?: 0;
-            mp.fns.forEach { (time, fn) -> it.fns[last + time] = fn }
-        }
+            this.apply { fns[fns.lastKey() + time] = f }
 
-    private fun <T, V> LinkedHashMap<T, V>.lastKey(): T? {
-        var lastKey: T? = null
-        this.forEach { (i, _) -> lastKey = i }
-        return lastKey
-    }
+    fun then(time: Int, f: (GameObject) -> Unit) =
+            this.apply { fns[fns.lastKey() + time] = { obj, _ -> f(obj) } }
+
+    fun then(mp: MovePattern) =
+            this.apply {
+                mp.fns.forEach { (time, fn) -> fns[fns.lastKey() + time] = fn }
+            }
+
+    fun copy() = MovePattern().also { it.fns.putAll(this.fns) }
 }

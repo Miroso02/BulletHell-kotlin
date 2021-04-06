@@ -1,7 +1,7 @@
 package gameElements
 
 class NewFirePattern(val fn: (Bullet?, Int) -> Bullet?) {
-    constructor(n: Int): this({ _, _ -> Bullet() })
+    constructor(n: Int): this({ _, i -> Bullet(i) })
     operator fun invoke(b: Bullet, i: Int) = fn(b, i)
 
     inline fun applyIndexed(crossinline f: (Bullet, Int) -> Bullet?) =

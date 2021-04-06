@@ -5,7 +5,7 @@ import cannons
 import java.awt.Color
 import java.awt.Graphics2D
 
-class Player: Cannon() {
+object Player: Cannon() {
     init {
         position = Point(400, 500)
         size = 1
