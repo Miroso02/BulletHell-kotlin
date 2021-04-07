@@ -27,7 +27,6 @@ abstract class GameObject(var position: Point) {
 
     abstract fun display(g: Graphics2D)
 
-    //TODO: remove?
     open fun move() {
         movePattern(this)
     }

@@ -4,8 +4,9 @@ import timer
 
 // TODO: Make it generic (?)
 open class MovePattern {
-    private val fns = KeyOrderedHashMap()
-    operator fun invoke(obj: GameObject, i: Int) {
+    protected val fns = KeyOrderedHashMap()
+
+    open operator fun invoke(obj: GameObject, i: Int) {
         val endOfCurFn = fns.nextKey(obj.curMovFuncInd)
         if (timer - obj.createTime > endOfCurFn) {
             obj.curMovFuncInd = endOfCurFn
@@ -15,16 +16,22 @@ open class MovePattern {
 
     operator fun invoke(obj: GameObject) = this(obj, 0)
 
-    fun then(time: Int, f: (GameObject, Int) -> Unit) =
+    open fun then(time: Int, f: (GameObject, Int) -> Unit): MovePattern =
             this.apply { fns[fns.lastKey() + time] = f }
 
-    fun then(time: Int, f: (GameObject) -> Unit) =
+    open fun then(time: Int, f: (GameObject) -> Unit): MovePattern =
             this.apply { fns[fns.lastKey() + time] = { obj, _ -> f(obj) } }
 
-    fun then(mp: MovePattern) =
+    open fun then(mp: MovePattern): MovePattern =
             this.apply {
-                mp.fns.forEach { (time, fn) -> fns[fns.lastKey() + time] = fn }
+                val lastTime = fns.lastKey()
+                mp.fns.forEach { time, fn -> fns[lastTime + time] = fn }
             }
 
     fun copy() = MovePattern().also { it.fns.putAll(this.fns) }
+    fun repeat(n: Int = 1) =
+            this.apply {
+                val copy = this.copy()
+                repeat(n) { this.then(copy) }
+            }
 }

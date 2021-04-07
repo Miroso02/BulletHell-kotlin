@@ -17,4 +17,13 @@ class KeyOrderedHashMap : HashMap<Int, (GameObject, Int) -> Unit>() {
         this.nextKeys.putAll(from.nextKeys)
         super.putAll(from)
     }
+
+    fun forEach(action: (Int, (GameObject, Int) -> Unit) -> Unit) {
+        var key = nextKey(0)
+        while (true) {
+            action(key, this[key]!!)
+            if (key == lastKey) break
+            key = nextKey(key)
+        }
+    }
 }

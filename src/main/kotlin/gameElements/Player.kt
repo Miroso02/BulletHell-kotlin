@@ -5,7 +5,7 @@ import cannons
 import java.awt.Color
 import java.awt.Graphics2D
 
-object Player: Cannon() {
+object Player : Cannon() {
     init {
         position = Point(400, 500)
         size = 1
@@ -39,7 +39,11 @@ object Player: Cannon() {
         bullets.forEach { (_, arr) ->
             arr.removeAll {
                 it.isOffScreen() ||
-                cannons.any { c -> if (c != this && c.collides(it) && !c.isDead) { c.health--; true } else false }
+                        cannons.any { c ->
+                            if (c != this && !c.isDead && c.collides(it)) {
+                                c.health--; true
+                            } else false
+                        }
             }
         }
     }

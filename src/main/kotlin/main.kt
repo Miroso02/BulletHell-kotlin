@@ -1,3 +1,4 @@
+import gameElements.Cannon
 import gameElements.Player
 import java.awt.Color
 import java.awt.Graphics
@@ -6,6 +7,9 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JFrame
 import javax.swing.JPanel
+
+val cannons = ArrayList<Cannon>().apply { add(Player) }
+var timer = -1
 
 fun main() {
     MainFrame
@@ -38,4 +42,12 @@ object MainFrame: JFrame() {
         defaultCloseOperation = EXIT_ON_CLOSE
         isVisible = true
     }
+}
+
+fun updateScreen(g: Graphics2D) {
+    try {
+        cannons.forEach { it.update(g) }
+        timer++
+    }
+    catch (e: ConcurrentModificationException) {e.printStackTrace()}
 }
