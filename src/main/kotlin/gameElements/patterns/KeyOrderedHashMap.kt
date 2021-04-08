@@ -1,4 +1,6 @@
-package gameElements
+package gameElements.patterns
+
+import gameElements.GameObject
 
 class KeyOrderedHashMap : HashMap<Int, (GameObject, Int) -> Unit>() {
     private val nextKeys = HashMap<Int, Int>()

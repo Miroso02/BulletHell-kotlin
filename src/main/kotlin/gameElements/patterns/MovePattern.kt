@@ -1,5 +1,6 @@
-package gameElements
+package gameElements.patterns
 
+import gameElements.GameObject
 import timer
 
 // TODO: Make it generic (?)

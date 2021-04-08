@@ -2,6 +2,7 @@ package gameElements
 
 import Point
 import cannons
+import gameElements.patterns.FirePattern
 import java.awt.Color
 import java.awt.Graphics2D
 

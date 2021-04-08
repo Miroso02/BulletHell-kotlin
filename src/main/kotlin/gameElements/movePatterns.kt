@@ -1,6 +1,7 @@
 package gameElements
 
 import Point
+import gameElements.patterns.MovePattern
 
 // moving functions
 val moveForward = { obj: GameObject, _: Int -> obj.position += obj.velocity }

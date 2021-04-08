@@ -1,5 +1,6 @@
-package gameElements
+package gameElements.patterns
 
+import gameElements.Bullet
 import timer
 
 // TODO: Remove? (unite with MovePattern)

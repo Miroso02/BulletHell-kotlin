@@ -2,6 +2,7 @@ package gameElements
 
 import Point
 import MainFrame
+import gameElements.patterns.MovePattern
 import timer
 import java.awt.Color
 import java.awt.Graphics2D
@@ -21,6 +22,7 @@ abstract class GameObject(var position: Point) {
         }
     var movePattern = MovePattern().then(3000, moveForward)
     var velocity = Point(0, 0)
+    // TODO: Don't like to store acceleration here. Should move it to MovePattern somehow
     var accel = Point(0, 0)
     val createTime = timer
     var curMovFuncInd = 0
