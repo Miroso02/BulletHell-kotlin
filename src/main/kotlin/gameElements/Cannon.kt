@@ -1,53 +1,46 @@
 package gameElements
 
 import Point
-import gameElements.patterns.FirePattern
 import java.awt.Color
 import java.awt.Graphics2D
 
-open class Cannon(position: Point = Point(0, 0)): GameObject(position) {
+open class Cannon(position: Point = Point(0, 0)) : GameObject(position) {
     var health = 100
     var isDead = false
-    private val firePatterns = ArrayList<FirePattern>()
-    // TODO: Maybe rewrite logic of storing bullets
-    val bullets = HashMap<FirePattern, ArrayList<Bullet>>()
 
-    constructor(x: Int, y: Int): this(Point(x, y))
+    val bullets = ArrayList<Bullet>()
+
+    constructor(x: Int, y: Int) : this(Point(x, y))
 
     init {
         size = 40
         color = Color.RED
     }
 
-    fun fire() {
-        firePatterns.forEach { bullets[it]?.addAll(it()) }
+    open fun fire() {
+
     }
 
     open fun update(g: Graphics2D) {
         if (health <= 0) this.isDead = true
         if (!isDead) {
             fire()
+            move()
             display(g)
         }
         removeUselessBullets()
-        bullets.values.forEach { arr ->
-            arr.forEach { b ->
-                with(b) {
-                    display(g)
-                    move()
-                    if (collides(Player))
-                        Player.isDead = true
-                }
+        bullets.forEach { b ->
+            with(b) {
+                display(g)
+                move()
+//                if (collides(Player))
+//                    Player.isDead = true
             }
         }
     }
 
     open fun removeUselessBullets() {
-        bullets.forEach { (_, arr) -> arr.removeAll { it.isOffScreen() } }
-    }
-
-    fun addFirePatterns(vararg firePatterns: FirePattern) {
-        firePatterns.forEach { this.firePatterns.add(it); bullets[it] = ArrayList() }
+        bullets.removeAll { it.isOffScreen() }
     }
 
     override fun display(g: Graphics2D) {

@@ -24,7 +24,7 @@ abstract class GameObject(var position: Point) {
     var velocity = Point(0, 0)
     // TODO: Don't like to store acceleration here. Should move it to MovePattern somehow
     var accel = Point(0, 0)
-    val createTime = timer
+    var createTime = timer
     var curMovFuncInd = 0
 
     abstract fun display(g: Graphics2D)

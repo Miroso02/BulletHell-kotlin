@@ -1,5 +1,5 @@
 import gameElements.*
-import gameElements.patterns.FirePattern
+import gameElements.patterns.LoopedMovePattern
 import gameElements.patterns.MovePattern
 import java.awt.Color
 import kotlin.math.cos
@@ -15,6 +15,7 @@ fun initCannons() {
 
     val mp1 = MovePattern()
             .then(1) { obj ->
+                obj.position = c.position
                 obj.size = 8
                 obj.color = Color.BLUE
             }
@@ -40,24 +41,23 @@ fun initCannons() {
                 obj.color = Color.MAGENTA
                 obj.size = 8
             }
-            .then(160, moveForward)
-            .then(1) { obj ->
-                obj.color = Color.ORANGE
-            }
-            .then(80, stand)
-            .then(mp1)
-            .then(1) { obj ->
-                obj.velocity = Point.randVector() * (Random.nextFloat() * 2.5f + 1.5f)
-                obj.color = Color.RED
-                obj.size = 8
-            }
-            .then(1000, moveForward)
+//            .then(160, moveForward)
+//            .then(1) { obj ->
+//                obj.createTime = timer
+//                obj.curMovFuncInd = 0
+//            }
+            .then(2000, moveForward)
 
-    val pattern = FirePattern { List(50) { Bullet(it) } }
-            .applyEvery { if (timer % 30 == 0 && timer % 1000 < 210) it else emptyList() }
-            .apply { it.position = c.position }
-            .apply { it.size = 8; it.color = Color.BLUE }
-            .apply { it.movePattern = cbMovePattern }
-    c.addFirePatterns(pattern)
+    val cannonFirePattern = LoopedMovePattern()
+            .then(1) { can ->
+                can as Cannon
+                val bullets = List(50) { Bullet(it) }
+                        .onEach { it.movePattern = cbMovePattern }
+                can.bullets.addAll(bullets)
+            }
+            .then(29, stand)
+            .repeat(7)
+            .then(790, stand)
+    c.movePattern = cannonFirePattern
     cannons.add(c)
 }

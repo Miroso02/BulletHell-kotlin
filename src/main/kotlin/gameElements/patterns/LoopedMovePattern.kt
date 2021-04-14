@@ -1,6 +1,6 @@
-package gameElements
+package gameElements.patterns
 
-import gameElements.patterns.MovePattern
+import gameElements.GameObject
 import timer
 
 class LoopedMovePattern : MovePattern() {
