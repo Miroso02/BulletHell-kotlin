@@ -3,11 +3,7 @@ package gameElements
 import Point
 import java.awt.Graphics2D
 
-class Bullet(private val index: Int, position: Point = Point(0, 0)) : GameObject(position) {
-    override fun move() {
-        movePattern(this, index)
-    }
-
+class Bullet(position: Point = Point(0, 0), index: Int = 0) : GameObject(position, index) {
     override fun display(g: Graphics2D) {
         g.color = color
         g.ellipse(position, size)

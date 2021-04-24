@@ -2,7 +2,9 @@ package gameElements
 
 import Point
 import cannons
-import gameElements.patterns.MovePattern
+import gameElements.patterns.BehaviorPattern
+import gameElements.patterns.MoveComponent
+import gameElements.patterns.SimplePatternComponent
 import java.awt.Color
 import java.awt.Graphics2D
 
@@ -11,26 +13,25 @@ object Player : Cannon() {
         position = Point(400, 500)
         size = 1
         color = Color.WHITE
-        val playerFirePattern = MovePattern()
+        val playerFirePattern = BehaviorPattern<SimplePatternComponent>()
                 .then(1) { can ->
-                    val bullets = List(5) { Bullet(it) }
+                    val bullets = List(5) { Bullet(index = it) }
                             .onEachIndexed { i, b ->
                                 b.position = this.position
                                 b.color = Color.GRAY
-                                b.velocity = Point((i - 1).toFloat() / 4, -8)
+                                val pattern = MoveComponent(b, BehaviorPattern<MoveComponent>().then(3000, moveForward))
+                                pattern.velocity = Point((i - 1).toFloat() / 4, -8)
+                                b.behaviors.add(pattern)
                             }
                     this.bullets.addAll(bullets)
                 }
                 .then(4, stand)
-        this.movePattern = playerFirePattern
-    }
-
-    override fun fire() {
+        this.behaviors.add(SimplePatternComponent(this, playerFirePattern))
     }
 
     override fun update(g: Graphics2D) {
         if (!isDead) {
-            movePattern(this)
+            move()
             display(g)
         }
         removeUselessBullets()

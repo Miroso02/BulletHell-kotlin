@@ -7,7 +7,6 @@ import java.awt.Graphics2D
 open class Cannon(position: Point = Point(0, 0)) : GameObject(position) {
     var health = 100
     var isDead = false
-
     val bullets = ArrayList<Bullet>()
 
     constructor(x: Int, y: Int) : this(Point(x, y))
@@ -17,14 +16,9 @@ open class Cannon(position: Point = Point(0, 0)) : GameObject(position) {
         color = Color.RED
     }
 
-    open fun fire() {
-
-    }
-
     open fun update(g: Graphics2D) {
         if (health <= 0) this.isDead = true
         if (!isDead) {
-            fire()
             move()
             display(g)
         }
@@ -33,8 +27,8 @@ open class Cannon(position: Point = Point(0, 0)) : GameObject(position) {
             with(b) {
                 display(g)
                 move()
-//                if (collides(Player))
-//                    Player.isDead = true
+                if (collides(Player))
+                    Player.isDead = true
             }
         }
     }
@@ -46,7 +40,7 @@ open class Cannon(position: Point = Point(0, 0)) : GameObject(position) {
     override fun display(g: Graphics2D) {
         g.color = color
         g.rect(position, size)
-        g.drawString("$health", x, y)
+        g.drawString("$health", position.x, position.y)
     }
 
     private fun Graphics2D.rect(position: Point, size: Int) {

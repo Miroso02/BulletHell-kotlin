@@ -1,11 +1,12 @@
 package gameElements.patterns
 
-import gameElements.GameObject
 import timer
 
-class LoopedMovePattern : MovePattern() {
+// TODO: Don't like this class. It makes impossible to inline BehaviorPattern's functions
+class LoopedBehaviorPattern<T : PatternComponent<T>> : BehaviorPattern<T>() {
     private var totalTime = 0
-    override operator fun invoke(obj: GameObject, i: Int) {
+    override operator fun invoke(context: T) {
+        val (obj) = context
         val endOfCurFn = fns.nextKey(obj.curMovFuncInd)
         ((timer - obj.createTime) % totalTime).let {
             if (it > endOfCurFn) {
@@ -15,21 +16,15 @@ class LoopedMovePattern : MovePattern() {
                 obj.curMovFuncInd = 0
             }
         }
-
-        fns[endOfCurFn]?.invoke(obj, i)
+        fns[endOfCurFn]?.invoke(context)
     }
 
-    override fun then(time: Int, f: (GameObject, Int) -> Unit): MovePattern {
+    override fun then(time: Int, f: (T) -> Unit): BehaviorPattern<T> {
         totalTime += time
         return super.then(time, f)
     }
 
-    override fun then(time: Int, f: (GameObject) -> Unit): MovePattern {
-        totalTime += time
-        return super.then(time, f)
-    }
-
-    override fun then(mp: MovePattern): MovePattern {
+    override fun then(mp: BehaviorPattern<T>): BehaviorPattern<T> {
         val newMp = super.then(mp)
         totalTime = fns.lastKey()
         return newMp
