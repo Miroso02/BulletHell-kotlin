@@ -24,7 +24,7 @@ object MainFrame: JFrame() {
                     override fun mouseMoved(e: MouseEvent?) {
                         if (e == null || Player.isDead) return
                         val curPosition = Point(e.point.x, e.point.y)
-                        Player.position = curPosition
+                        Player.body.position = curPosition
                     }
                 })
                 background = Color.BLACK

@@ -1,20 +1,20 @@
-package gameElements.patterns
+package gameElements.behaviorPattern
 
+import gameElements.components.patternComponents.PatternComponent
 import timer
 
 open class BehaviorPattern<T : PatternComponent<T>> {
     open operator fun invoke(context: T) {
-        val (obj) = context
-        val endOfCurFn = fns.nextKey(obj.curMovFuncInd)
-        if (timer - obj.createTime > endOfCurFn) {
-            obj.curMovFuncInd = endOfCurFn
+        val endOfCurFn = fns.nextKey(context.curFunIndex)
+        if (timer - context.createTime > endOfCurFn) {
+            context.curFunIndex = endOfCurFn
         }
         fns[endOfCurFn]?.invoke(context)
     }
 
     protected val fns = KeyOrderedHashMap<T>()
 
-    open fun then(time: Int, f: (T) -> Unit): BehaviorPattern<T> =
+    open fun then(time: Int = 100000, f: (T) -> Unit): BehaviorPattern<T> =
         this.apply { fns[fns.lastKey() + time] = f }
 
     open fun then(mp: BehaviorPattern<T>): BehaviorPattern<T> =

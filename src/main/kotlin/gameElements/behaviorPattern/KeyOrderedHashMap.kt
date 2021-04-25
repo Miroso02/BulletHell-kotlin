@@ -1,6 +1,6 @@
-package gameElements.patterns
+package gameElements.behaviorPattern
 
-import gameElements.GameObject
+import gameElements.components.BehaviorComponent
 
 class KeyOrderedHashMap<T : BehaviorComponent> : HashMap<Int, (T) -> Unit>() {
     private val nextKeys = HashMap<Int, Int>()

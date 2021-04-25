@@ -1,50 +1,47 @@
 package gameElements
 
-import Point
+import gameElements.behaviorPattern.BehaviorPattern
+import gameElements.components.patternComponents.DisplayComponent
+import gameElements.components.patternComponents.SimplePatternComponent
 import java.awt.Color
 import java.awt.Graphics2D
 
-open class Cannon(position: Point = Point(0, 0)) : GameObject(position) {
+open class Cannon : GameObject() {
     var health = 100
     var isDead = false
     val bullets = ArrayList<Bullet>()
 
-    constructor(x: Int, y: Int) : this(Point(x, y))
+    protected val cannonBulletControlComponent = SimplePatternComponent(BehaviorPattern<SimplePatternComponent>()
+        .then {
+            bullets.removeAll { it.body.isOffScreen() }
+            bullets.forEach { b ->
+                with(b) {
+                    update()
+                    if (body.collides(Player.body))
+                        Player.isDead = true
+                }
+            }
+        })
 
     init {
-        size = 40
-        color = Color.RED
+        displayComponent = DisplayComponent(cannonDisplayPattern, this.body, this.color)
+        body.size = 40
+        displayComponent.color = Color.RED
+        behaviors.add(displayComponent)
     }
 
     open fun update(g: Graphics2D) {
+        for (b in bullets)
+            b.displayComponent.graphics = g
+        cannonBulletControlComponent.update()
         if (health <= 0) this.isDead = true
         if (!isDead) {
-            move()
-            display(g)
-        }
-        removeUselessBullets()
-        bullets.forEach { b ->
-            with(b) {
-                display(g)
-                move()
-                if (collides(Player))
-                    Player.isDead = true
-            }
+            displayComponent.graphics = g
+            update()
         }
     }
 
     open fun removeUselessBullets() {
-        bullets.removeAll { it.isOffScreen() }
-    }
-
-    override fun display(g: Graphics2D) {
-        g.color = color
-        g.rect(position, size)
-        g.drawString("$health", position.x, position.y)
-    }
-
-    private fun Graphics2D.rect(position: Point, size: Int) {
-        val (x, y) = position - Point(size / 2, size / 2)
-        drawRect(x.toInt(), y.toInt(), size, size)
+        bullets.removeAll { it.body.isOffScreen() }
     }
 }

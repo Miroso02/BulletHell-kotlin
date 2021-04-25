@@ -1,5 +1,9 @@
 import gameElements.*
-import gameElements.patterns.*
+import gameElements.behaviorPattern.BehaviorPattern
+import gameElements.behaviorPattern.LoopedBehaviorPattern
+import gameElements.components.patternComponents.BulletControlComponent
+import gameElements.components.patternComponents.DisplayComponent
+import gameElements.components.patternComponents.MoveComponent
 import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
@@ -7,56 +11,53 @@ import kotlin.random.Random
 
 fun initCannons() {
     fun pointAround(point: Point, dist: Float, density: Int, i: Int = 0): Point =
-            point + Point(cos(i * 2 * Math.PI / density), sin(i * 2 * Math.PI / density)) * dist
+        point + Point(cos(i * 2 * Math.PI / density), sin(i * 2 * Math.PI / density)) * dist
 
-    val c = Cannon(600, 150)
+    val c = Cannon()
+    c.body.position = Point(600, 150)
     c.health = 800
 
-    val mp1 = BehaviorPattern<MoveComponent>()
-            .then(1) { (obj) ->
-                obj.position = c.position
-                obj.size = 8
-                obj.color = Color.BLUE
-            }
-            .then(moveTo(60) { (obj) ->
-                pointAround(c.position, 100f, 50, obj.index)
-            })
-            .then(120, stand)
-            .then(1) { (obj) ->
-                obj.color = Color.GREEN
-            }
-            .then(moveTo(120) {
-                Player.position
-            })
-            .then(1) { (obj) ->
-                obj.size = 15
-            }
-            .then(60, stand)
-
     val cbMovePattern = BehaviorPattern<MoveComponent>()
-            .then(mp1)
-            .then(1) { context ->
-                val (obj) = context
-                context.velocity = Point.randVector() * (Random.nextFloat() * 2f + 1f)
-                obj.color = Color.MAGENTA
-                obj.size = 8
-            }
-//            .then(160, moveForward)
-//            .then(1) { obj ->
-//                obj.createTime = timer
-//                obj.curMovFuncInd = 0
-//            }
-            .then(2000, moveForward)
-    val cannonFirePattern = LoopedBehaviorPattern<SimplePatternComponent>()
-            .then(1) { (can) ->
-                can as Cannon
-                val bullets = List(50) { Bullet(index = it) }
-                        .onEach { it.behaviors.add(MoveComponent(it, cbMovePattern)) }
-                can.bullets.addAll(bullets)
-            }
-            .then(29, stand)
-            .repeat(7)
-            .then(790, stand)
-    c.behaviors.add(SimplePatternComponent(c, cannonFirePattern))
+        .then(1) { context ->
+            context.position = c.body.position
+            context.size = 8
+        }
+        .then(moveTo(60) { context ->
+            pointAround(c.body.position, 100f, 50, context.index)
+        })
+        .then(120, stand)
+        .then(moveTo(121) {
+            Player.body.position
+        })
+        .then(1) { context ->
+            context.size = 15
+        }
+        .then(60, stand)
+        .then(1) { context ->
+            context.velocity = Point.randVector() * (Random.nextFloat() * 2f + 1f)
+            context.size = 8
+        }
+        .then(2000, moveForward)
+    val cbColorPattern = BehaviorPattern<DisplayComponent>()
+        .then(1) { it.color = Color.BLUE }
+        .then(180, stand)
+        .then(1) { it.color = Color.GREEN }
+        .then(181, stand)
+        .then(1) { it.color = Color.MAGENTA }
+        .then(2000, stand)
+
+    val cannonFirePattern = LoopedBehaviorPattern<BulletControlComponent>()
+        .then(1) { context ->
+            val bullets = List(50) { Bullet(index = it) }
+                .onEachIndexed { i, b ->
+                    b.behaviors.add(MoveComponent(cbMovePattern, b.body, i))
+                    b.behaviors.add(DisplayComponent(cbColorPattern, b.body, b.color, i))
+                }
+            context.bullets.addAll(bullets)
+        }
+        .then(29, stand)
+        .repeat(7)
+        .then(790, stand)
+    c.behaviors.add(BulletControlComponent(cannonFirePattern, c.bullets))
     cannons.add(c)
 }

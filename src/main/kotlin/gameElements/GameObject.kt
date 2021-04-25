@@ -1,29 +1,20 @@
 package gameElements
 
-import Point
-import MainFrame
-import gameElements.patterns.BehaviorComponent
-import gameElements.patterns.BehaviorPattern
-import gameElements.patterns.MoveComponent
+import gameElements.behaviorPattern.BehaviorPattern
+import gameElements.components.*
+import gameElements.components.patternComponents.DisplayComponent
 import timer
-import java.awt.Color
 import java.awt.Graphics2D
 
-abstract class GameObject(var position: Point, val index: Int = 0) {
-    var size = 5
-    var color: Color = Color.WHITE
-    val behaviors = ArrayList<BehaviorComponent>()
+abstract class GameObject(val index: Int = 0) {
     var createTime = timer
-    var curMovFuncInd = 0
+    val body = BodyComponent()
+    val color = ColorComponent()
+    var displayComponent = DisplayComponent(BehaviorPattern(), this.body, this.color)
+    val behaviors = ArrayList<BehaviorComponent>().apply { add(body) }
 
-    abstract fun display(g: Graphics2D)
-
-    open fun move() {
+    open fun update() {
         for (beh in behaviors)
             beh.update()
     }
-
-    fun collides(obj: GameObject): Boolean = (obj.position - position).mag() < (size + obj.size) / 2
-    fun isOffScreen(): Boolean =
-        position.x > MainFrame.size.width || position.x < 0 || position.y > MainFrame.size.height || position.y < 0
 }

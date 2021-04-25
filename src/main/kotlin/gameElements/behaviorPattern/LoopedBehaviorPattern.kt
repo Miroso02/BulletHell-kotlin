@@ -1,19 +1,19 @@
-package gameElements.patterns
+package gameElements.behaviorPattern
 
+import gameElements.components.patternComponents.PatternComponent
 import timer
 
 // TODO: Don't like this class. It makes impossible to inline BehaviorPattern's functions
 class LoopedBehaviorPattern<T : PatternComponent<T>> : BehaviorPattern<T>() {
     private var totalTime = 0
     override operator fun invoke(context: T) {
-        val (obj) = context
-        val endOfCurFn = fns.nextKey(obj.curMovFuncInd)
-        ((timer - obj.createTime) % totalTime).let {
+        val endOfCurFn = fns.nextKey(context.curFunIndex)
+        ((timer - context.createTime) % totalTime).let {
             if (it > endOfCurFn) {
-                obj.curMovFuncInd = endOfCurFn
+                context.curFunIndex = endOfCurFn
             }
             else if (it == 0 && endOfCurFn == fns.lastKey()) {
-                obj.curMovFuncInd = 0
+                context.curFunIndex = 0
             }
         }
         fns[endOfCurFn]?.invoke(context)
