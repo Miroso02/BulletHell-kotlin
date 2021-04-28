@@ -1,4 +1,4 @@
-package gameElements
+package gameElements.patterns
 
 import Point
 import gameElements.behaviorPattern.BehaviorPattern

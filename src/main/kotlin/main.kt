@@ -22,7 +22,7 @@ object MainFrame: JFrame() {
             init {
                 addMouseMotionListener(object: MouseAdapter() {
                     override fun mouseMoved(e: MouseEvent?) {
-                        if (e == null || Player.isDead) return
+                        if (e == null || Player.healthComponent.isDead) return
                         val curPosition = Point(e.point.x, e.point.y)
                         Player.body.position = curPosition
                     }

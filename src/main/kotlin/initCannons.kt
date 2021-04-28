@@ -1,9 +1,11 @@
 import gameElements.*
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.behaviorPattern.LoopedBehaviorPattern
 import gameElements.components.patternComponents.BulletControlComponent
 import gameElements.components.patternComponents.DisplayComponent
 import gameElements.components.patternComponents.MoveComponent
+import gameElements.patterns.moveForward
+import gameElements.patterns.moveTo
+import gameElements.patterns.stand
 import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
@@ -15,7 +17,7 @@ fun initCannons() {
 
     val c = Cannon()
     c.body.position = Point(600, 150)
-    c.health = 800
+    c.healthComponent.health = 800
 
     val cbMovePattern = BehaviorPattern<MoveComponent>()
         .then(1) { context ->
@@ -46,7 +48,7 @@ fun initCannons() {
         .then(1) { it.color = Color.MAGENTA }
         .then(2000, stand)
 
-    val cannonFirePattern = LoopedBehaviorPattern<BulletControlComponent>()
+    val cannonFirePattern = BehaviorPattern<BulletControlComponent>()
         .then(1) { context ->
             val bullets = List(50) { Bullet(index = it) }
                 .onEachIndexed { i, b ->
@@ -58,6 +60,7 @@ fun initCannons() {
         .then(29, stand)
         .repeat(7)
         .then(790, stand)
-    c.behaviors.add(BulletControlComponent(cannonFirePattern, c.bullets))
+        .loop()
+    c.behaviors.add(BulletControlComponent(cannonFirePattern, c.bulletsComponent))
     cannons.add(c)
 }

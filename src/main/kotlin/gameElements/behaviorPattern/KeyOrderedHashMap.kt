@@ -2,7 +2,7 @@ package gameElements.behaviorPattern
 
 import gameElements.components.BehaviorComponent
 
-class KeyOrderedHashMap<T : BehaviorComponent> : HashMap<Int, (T) -> Unit>() {
+internal class KeyOrderedHashMap<T : BehaviorComponent> : HashMap<Int, (T) -> Unit>() {
     private val nextKeys = HashMap<Int, Int>()
     private var lastKey = 0
 

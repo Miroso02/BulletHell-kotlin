@@ -9,20 +9,10 @@ import java.awt.Graphics2D
 
 class DisplayComponent(
     pattern: BehaviorPattern<DisplayComponent>,
-    private val bodyComponent: BodyComponent,
+    bodyComponent: BodyComponent,
     private val colorComponent: ColorComponent,
     index: Int = 0
-) : PatternComponent<DisplayComponent>(pattern, index) {
-    var position: Point
-        get() = bodyComponent.position
-        set(value) {
-            bodyComponent.position = value
-        }
-    var size: Int
-        get() = bodyComponent.size
-        set(value) {
-            bodyComponent.size = value
-        }
+) : UseBodyPatternComponent<DisplayComponent>(pattern, bodyComponent, index) {
     var color: Color
         get() = colorComponent.color
         set(value) {

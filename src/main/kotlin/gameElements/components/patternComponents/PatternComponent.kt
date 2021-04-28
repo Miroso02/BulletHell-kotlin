@@ -9,7 +9,7 @@ abstract class PatternComponent<T : PatternComponent<T>>(
     val index: Int = 0,
 ) :
     BehaviorComponent {
-    val createTime = timer
+    var createTime = timer
     var curFunIndex = 0
     abstract override fun update()
 }

@@ -6,20 +6,10 @@ import gameElements.components.BodyComponent
 
 class MoveComponent(
     movePattern: BehaviorPattern<MoveComponent>,
-    private val bodyComponent: BodyComponent,
+    bodyComponent: BodyComponent,
     index: Int = 0
 ) :
-    PatternComponent<MoveComponent>(movePattern, index) {
-    var position: Point
-        get() = bodyComponent.position
-        set(value) {
-            bodyComponent.position = value
-        }
-    var size: Int
-        get() = bodyComponent.size
-        set(value) {
-            bodyComponent.size = value
-        }
+    UseBodyPatternComponent<MoveComponent>(movePattern, bodyComponent, index) {
     var velocity = Point(0, 0)
     var accel = Point(0, 0)
     override fun update() {
