@@ -1,26 +1,21 @@
 package gameElements.components.patternComponents
 
-import Point
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.components.BodyComponent
-import gameElements.components.ColorComponent
+import gameElements.elements.BodyElement
+import gameElements.elements.ColorElement
 import java.awt.Color
 import java.awt.Graphics2D
 
 class DisplayComponent(
-    pattern: BehaviorPattern<DisplayComponent>,
-    bodyComponent: BodyComponent,
-    private val colorComponent: ColorComponent,
+    displayPattern: BehaviorPattern<DisplayComponent>,
+    bodyElement: BodyElement,
+    private val colorElement: ColorElement,
     index: Int = 0
-) : UseBodyPatternComponent<DisplayComponent>(pattern, bodyComponent, index) {
+) : UseBodyPatternComponent<DisplayComponent>(displayPattern, bodyElement, index) {
     var color: Color
-        get() = colorComponent.color
+        get() = colorElement.color
         set(value) {
-            colorComponent.color = value
+            colorElement.color = value
         }
     var graphics: Graphics2D? = null
-
-    override fun update() {
-        pattern(this)
-    }
 }

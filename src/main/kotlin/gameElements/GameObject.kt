@@ -3,12 +3,14 @@ package gameElements
 import gameElements.behaviorPattern.BehaviorPattern
 import gameElements.components.*
 import gameElements.components.patternComponents.DisplayComponent
+import gameElements.elements.BodyElement
+import gameElements.elements.ColorElement
 
-abstract class GameObject(val index: Int = 0) {
+abstract class GameObject {
     val behaviors = ArrayList<BehaviorComponent>()
 
-    val body = BodyComponent()
-    val color = ColorComponent()
+    val body = BodyElement()
+    val color = ColorElement()
     var displayComponent = DisplayComponent(BehaviorPattern(), this.body, this.color)
 
     open fun update() {

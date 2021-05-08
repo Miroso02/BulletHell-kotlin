@@ -1,13 +1,14 @@
 package gameElements.patterns
 
 import Point
-import cannons
 import gameElements.Bullet
 import gameElements.Player
 import gameElements.behaviorPattern.BehaviorPattern
 import gameElements.components.patternComponents.BulletControlComponent
 import gameElements.components.patternComponents.DisplayComponent
 import gameElements.components.patternComponents.MoveComponent
+import gameElements.components.patternComponents.SimplePatternComponent
+import playerBullets
 import java.awt.Color
 
 val playerDisplayPattern = BehaviorPattern<DisplayComponent>()
@@ -18,24 +19,9 @@ val playerDisplayPattern = BehaviorPattern<DisplayComponent>()
         }
     }
 
-val playerBulletControlPattern = BehaviorPattern<BulletControlComponent>()
-    .then { context ->
-        context.bullets.removeAll {
-            it.body.isOffScreen() ||
-                    cannons.any { c ->
-                        if (c != Player && !c.healthComponent.isDead && c.body.collides(it.body)) {
-                            c.healthComponent.health--; true
-                        } else false
-                    }
-        }
-        context.bullets.forEach { b ->
-            b.update()
-        }
-    }
-
-val playerFirePattern = BehaviorPattern<BulletControlComponent>()
-    .then(1) { context ->
-        val bullets = List(5) { Bullet(it) }
+val playerFirePattern = BehaviorPattern<SimplePatternComponent>()
+    .then(1) {
+        val bullets = List(5) { Bullet() }
             .onEachIndexed { i, b ->
                 b.body.position = Player.body.position
                 b.displayComponent.color = Color.GRAY
@@ -46,7 +32,7 @@ val playerFirePattern = BehaviorPattern<BulletControlComponent>()
                 pattern.velocity = Point((i - 1).toFloat() / 4, -8)
                 b.behaviors.add(pattern)
             }
-        context.bullets.addAll(bullets)
+        playerBullets.addAll(bullets)
     }
     .then(4, stand)
     .loop()

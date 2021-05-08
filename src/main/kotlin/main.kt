@@ -1,3 +1,4 @@
+import gameElements.Bullet
 import gameElements.Cannon
 import gameElements.Player
 import java.awt.Color
@@ -9,6 +10,8 @@ import javax.swing.JFrame
 import javax.swing.JPanel
 
 val cannons = ArrayList<Cannon>().apply { add(Player) }
+val bullets = ArrayList<Bullet>()
+val playerBullets = ArrayList<Bullet>()
 var timer = -1
 
 fun main() {
@@ -16,13 +19,13 @@ fun main() {
     initCannons()
 }
 
-object MainFrame: JFrame() {
+object MainFrame : JFrame() {
     init {
-        val drawer = object: JPanel() {
+        val drawer = object : JPanel() {
             init {
-                addMouseMotionListener(object: MouseAdapter() {
+                addMouseMotionListener(object : MouseAdapter() {
                     override fun mouseMoved(e: MouseEvent?) {
-                        if (e == null || Player.healthComponent.isDead) return
+                        if (e == null || Player.healthElement.isDead) return
                         val curPosition = Point(e.point.x, e.point.y)
                         Player.body.position = curPosition
                     }
@@ -46,8 +49,28 @@ object MainFrame: JFrame() {
 
 fun updateScreen(g: Graphics2D) {
     try {
-        cannons.forEach { it.update(g) }
+        cannons.forEach { it.displayComponent.graphics = g; it.update() }
+        bullets.removeAll { it.body.isOffScreen() }
+        bullets.forEach {
+            it.displayComponent.graphics = g
+            it.update()
+            if (it.body.collides(Player.body))
+                Player.healthElement.health = 0
+        }
+        playerBullets.forEach {
+            it.displayComponent.graphics = g
+            it.update()
+        }
+        playerBullets.removeAll {
+            it.body.isOffScreen() ||
+                    cannons.any { c ->
+                        if (c != Player && !c.healthElement.isDead && c.body.collides(it.body)) {
+                            c.healthElement.health--; true
+                        } else false
+                    }
+        }
         timer++
+    } catch (e: ConcurrentModificationException) {
+        e.printStackTrace()
     }
-    catch (e: ConcurrentModificationException) {e.printStackTrace()}
 }

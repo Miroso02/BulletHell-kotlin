@@ -2,23 +2,24 @@ package gameElements.components.patternComponents
 
 import Point
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.components.BodyComponent
+import gameElements.elements.BodyElement
 
 abstract class UseBodyPatternComponent<T : UseBodyPatternComponent<T>>(
     pattern: BehaviorPattern<T>,
-    private val bodyComponent: BodyComponent,
+    val bodyElement: BodyElement,
     index: Int = 0
 ) :
     PatternComponent<T>(pattern, index) {
     var position: Point
-        get() = bodyComponent.position
+        get() = bodyElement.position
         set(value) {
-            bodyComponent.position = value
+            bodyElement.position = value
         }
     var size: Int
-        get() = bodyComponent.size
+        get() = bodyElement.size
         set(value) {
-            bodyComponent.size = value
+            bodyElement.size = value
         }
-    abstract override fun update()
+    fun collides(body: BodyElement) = bodyElement.collides(body)
+    fun isOffScreen() = bodyElement.isOffScreen()
 }

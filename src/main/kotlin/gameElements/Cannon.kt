@@ -1,19 +1,14 @@
 package gameElements
 
-import gameElements.components.BulletsComponent
-import gameElements.components.HealthComponent
-import gameElements.components.patternComponents.BulletControlComponent
 import gameElements.components.patternComponents.DisplayComponent
-import gameElements.patterns.cannonBulletControlPattern
+import gameElements.elements.BulletsElement
+import gameElements.patterns.HealthElement
 import gameElements.patterns.cannonDisplayPattern
 import java.awt.Color
-import java.awt.Graphics2D
 
 open class Cannon : GameObject() {
-    val healthComponent = HealthComponent(100)
-    val bulletsComponent = BulletsComponent()
-
-    private val cannonBulletControlComponent = BulletControlComponent(cannonBulletControlPattern, this.bulletsComponent)
+    val healthElement = HealthElement(100)
+    val bulletsElement = BulletsElement()
 
     init {
         displayComponent = DisplayComponent(cannonDisplayPattern, this.body, this.color)
@@ -22,14 +17,9 @@ open class Cannon : GameObject() {
         behaviors.add(displayComponent)
     }
 
-    // TODO: Fix signature
-    open fun update(g: Graphics2D) {
-        for (b in bulletsComponent.bullets)
-            b.displayComponent.graphics = g
-        cannonBulletControlComponent.update()
-        if (!healthComponent.isDead) {
-            displayComponent.graphics = g
-            update()
+    override fun update() {
+        if (!healthElement.isDead) {
+            super.update()
         }
     }
 }

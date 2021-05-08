@@ -2,15 +2,12 @@ package gameElements.components.patternComponents
 
 import gameElements.Bullet
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.components.BulletsComponent
+import gameElements.elements.BulletsElement
 
 class BulletControlComponent(
     pattern: BehaviorPattern<BulletControlComponent>,
-    private val bulletsComponent: BulletsComponent
+    private val bulletsElement: BulletsElement
 ) : PatternComponent<BulletControlComponent>(pattern) {
     val bullets: ArrayList<Bullet>
-        get() = bulletsComponent.bullets
-    override fun update() {
-        pattern(this)
-    }
+        get() = bulletsElement.bullets
 }

@@ -35,11 +35,3 @@ val bulletDisplayPattern = BehaviorPattern<DisplayComponent>()
             g.fillOval(context.position.x.toInt(), context.position.y.toInt(), context.size, context.size)
         }
     }
-val cannonDisplayPattern = BehaviorPattern<DisplayComponent>()
-    .then { context ->
-        context.graphics?.let { g ->
-            g.color = context.color
-            val (x, y) = context.position - Point(context.size / 2, context.size / 2)
-            g.drawRect(x.toInt(), y.toInt(), context.size, context.size)
-        }
-    }

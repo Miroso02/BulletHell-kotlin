@@ -17,7 +17,7 @@ fun initCannons() {
 
     val c = Cannon()
     c.body.position = Point(600, 150)
-    c.healthComponent.health = 800
+    c.healthElement.health = 800
 
     val cbMovePattern = BehaviorPattern<MoveComponent>()
         .then(1) { context ->
@@ -49,18 +49,18 @@ fun initCannons() {
         .then(2000, stand)
 
     val cannonFirePattern = BehaviorPattern<BulletControlComponent>()
-        .then(1) { context ->
-            val bullets = List(50) { Bullet(index = it) }
+        .then(1) {
+            val newBullets = List(50) { Bullet() }
                 .onEachIndexed { i, b ->
                     b.behaviors.add(MoveComponent(cbMovePattern, b.body, i))
                     b.behaviors.add(DisplayComponent(cbColorPattern, b.body, b.color, i))
                 }
-            context.bullets.addAll(bullets)
+            bullets.addAll(newBullets)
         }
         .then(29, stand)
         .repeat(7)
         .then(790, stand)
         .loop()
-    c.behaviors.add(BulletControlComponent(cannonFirePattern, c.bulletsComponent))
+    c.behaviors.add(BulletControlComponent(cannonFirePattern, c.bulletsElement))
     cannons.add(c)
 }

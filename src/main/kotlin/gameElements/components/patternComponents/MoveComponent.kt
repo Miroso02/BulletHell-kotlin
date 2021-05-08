@@ -2,17 +2,14 @@ package gameElements.components.patternComponents
 
 import Point
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.components.BodyComponent
+import gameElements.elements.BodyElement
 
 class MoveComponent(
     movePattern: BehaviorPattern<MoveComponent>,
-    bodyComponent: BodyComponent,
+    bodyElement: BodyElement,
     index: Int = 0
 ) :
-    UseBodyPatternComponent<MoveComponent>(movePattern, bodyComponent, index) {
+    UseBodyPatternComponent<MoveComponent>(movePattern, bodyElement, index) {
     var velocity = Point(0, 0)
     var accel = Point(0, 0)
-    override fun update() {
-        pattern(this)
-    }
 }

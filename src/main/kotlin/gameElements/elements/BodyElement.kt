@@ -1,13 +1,12 @@
-package gameElements.components
+package gameElements.elements
 
 import Point
 
-class BodyComponent : BehaviorComponent {
+class BodyElement {
     var position = Point(0, 0)
     var size = 5
-    override fun update() {}
 
-    fun collides(body: BodyComponent): Boolean = (position - body.position).mag() < (size + body.size) / 2
+    fun collides(body: BodyElement): Boolean = (position - body.position).mag() < (size + body.size) / 2
     fun isOffScreen(): Boolean =
         position.x > MainFrame.size.width
                 || position.x < 0

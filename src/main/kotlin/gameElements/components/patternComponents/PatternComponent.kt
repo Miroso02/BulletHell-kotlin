@@ -11,5 +11,7 @@ abstract class PatternComponent<T : PatternComponent<T>>(
     BehaviorComponent {
     var createTime = timer
     var curFunIndex = 0
-    abstract override fun update()
+    override fun update() {
+        pattern(this as T)
+    }
 }

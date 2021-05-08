@@ -1,17 +1,14 @@
 package gameElements.patterns
 
-import gameElements.Player
+import Point
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.components.patternComponents.BulletControlComponent
+import gameElements.components.patternComponents.DisplayComponent
 
-val cannonBulletControlPattern = BehaviorPattern<BulletControlComponent>()
+val cannonDisplayPattern = BehaviorPattern<DisplayComponent>()
     .then { context ->
-        context.bullets.removeAll { it.body.isOffScreen() }
-        context.bullets.forEach { b ->
-            with(b) {
-                update()
-                if (body.collides(Player.body))
-                    Player.healthComponent.health = 0
-            }
+        context.graphics?.let { g ->
+            g.color = context.color
+            val (x, y) = context.position - Point(context.size / 2, context.size / 2)
+            g.drawRect(x.toInt(), y.toInt(), context.size, context.size)
         }
     }
