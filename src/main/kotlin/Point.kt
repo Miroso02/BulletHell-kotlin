@@ -16,6 +16,8 @@ class Point(var x: Float, var y: Float) {
     operator fun minus(p: Point) = this + -p
     operator fun times(s: Float) = Point(x * s, y * s)
     override fun toString() = "$x $y"
+    fun set(p: Point) = this.apply { x = p.x; y = p.y }
     fun mag() = sqrt(x * x + y * y)
     fun norm() = this * (1 / mag())
+    fun rotate(angle: Double) = Point(x * cos(angle) - y * sin(angle), x * sin(angle) + y * cos(angle))
 }

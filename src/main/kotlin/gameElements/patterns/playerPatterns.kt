@@ -4,7 +4,6 @@ import Point
 import gameElements.Bullet
 import gameElements.Player
 import gameElements.behaviorPattern.BehaviorPattern
-import gameElements.components.patternComponents.BulletControlComponent
 import gameElements.components.patternComponents.DisplayComponent
 import gameElements.components.patternComponents.MoveComponent
 import gameElements.components.patternComponents.SimplePatternComponent
