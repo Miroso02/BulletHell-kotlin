@@ -3,35 +3,31 @@ package gameElements.patterns
 import Point
 import gameElements.behaviorPattern.BehaviorPattern
 import gameElements.components.*
-import gameElements.components.patternComponents.DisplayComponent
-import gameElements.components.patternComponents.MoveComponent
-import gameElements.components.patternComponents.PatternComponent
+import gameElements.components.patternComponents.UniversalPatternComponent
+import gameElements.elements.BodyElement
 
 // moving functions
-val moveForward: (MoveComponent) -> Unit = { context ->
-    context.position += context.velocity
+val moveForward: (UniversalPatternComponent) -> Unit = {
+    (it.context["body"] as BodyElement).position += it.context["velocity"] as Point
 }
-val moveWithAccel: (MoveComponent) -> Unit = { context ->
-    context.position += context.velocity
-    context.velocity += context.accel
+val moveWithAccel: (UniversalPatternComponent) -> Unit = { (context) ->
+    val body: BodyElement by context
+    var velocity: Point by context
+    val accel: Point by context
+    body.position += velocity
+    velocity = velocity + accel
 }
 val stand: (BehaviorComponent) -> Unit = { _ -> }
 
-inline fun moveTo(time: Int, crossinline target: (PatternComponent<*>) -> Point) =
-        BehaviorPattern<MoveComponent>()
-                .then(1) { context ->
-                    val vec = target(context) - context.position
+fun moveTo(time: Int, target: (UniversalPatternComponent) -> Point) =
+        BehaviorPattern<UniversalPatternComponent>()
+                .then(1) {
+                    val body: BodyElement by it.context
+                    val vec = target(it) - body.position
                     val mag = vec.mag()
                     val norm = vec * (1 / mag)
-                    context.velocity = norm * (2f * mag / time)
-                    context.accel = norm * (-2f * mag / time / time)
+                    it.context["velocity"] = norm * (2f * mag / time)
+                    it.context["accel"] = norm * (-2f * mag / time / time)
                 }
                 .then(time, moveWithAccel)
 
-val bulletDisplayPattern = BehaviorPattern<DisplayComponent>()
-    .then { context ->
-        context.graphics?.let { g ->
-            g.color = context.color
-            g.fillOval(context.position.x.toInt(), context.position.y.toInt(), context.size, context.size)
-        }
-    }

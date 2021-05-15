@@ -1,20 +1,22 @@
 package gameElements
 
-import gameElements.components.patternComponents.DisplayComponent
-import gameElements.elements.BulletsElement
-import gameElements.patterns.HealthElement
-import gameElements.patterns.cannonDisplayPattern
+import gameElements.elements.HealthElement
+import gameElements.patterns.cannonDisplayPattern1
 import java.awt.Color
 
 open class Cannon : GameObject() {
     val healthElement = HealthElement(100)
-    val bulletsElement = BulletsElement()
 
     init {
-        displayComponent = DisplayComponent(cannonDisplayPattern, this.body, this.color)
+        context.putAll(mapOf(
+            "size" to 40,
+            "color" to Color.RED,
+            "body" to this.body,
+            "graphics" to null,
+            "health" to healthElement
+        ))
         body.size = 40
-        displayComponent.color = Color.RED
-        behaviors.add(displayComponent)
+        addBehavior(cannonDisplayPattern1)
     }
 
     override fun update() {

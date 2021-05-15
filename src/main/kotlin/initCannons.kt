@@ -20,10 +20,11 @@ fun initCannons() {
     c.body.position = Point(600, 150)
     c.healthElement.health = 800
 
-    val cbMovePattern = BehaviorPattern<MoveComponent>()
-        .then(1) { context ->
-            context.position = c.body.position
-            context.size = 8
+    val cbMovePattern = BehaviorPattern<UniversalPatternComponent>()
+        .then(1) { (context) ->
+            val body: BodyElement by context
+            body.position = c.body.position
+            body.size = 8
         }
         .then(moveTo(60) { context ->
             pointAround(c.body.position, 100f, 50, context.index)
@@ -32,31 +33,34 @@ fun initCannons() {
         .then(moveTo(121) {
             Player.body.position
         })
-        .then(1) { context ->
-            context.size = 15
+        .then(1) { (context) ->
+            val body: BodyElement by context
+            body.size = 15
         }
         .then(60, stand)
-        .then(1) { context ->
-            context.velocity = Point.randVector() * (Random.nextFloat() * 2f + 1f)
-            context.size = 8
+        .then(1) { (context) ->
+            context["velocity"] = Point.randVector() * (Random.nextFloat() * 2f + 1f)
+            val body: BodyElement by context
+            body.size = 8
         }
         .then(2000, moveForward)
-    val cbColorPattern = BehaviorPattern<DisplayComponent>()
-        .then(1) { it.color = Color.BLUE }
+    val cbColorPattern = BehaviorPattern<UniversalPatternComponent>()
+        .then(1) { it.context["color"] = Color.BLUE }
         .then(180, stand)
-        .then(1) { it.color = Color.GREEN }
+        .then(1) { it.context["color"] = Color.GREEN }
         .then(181, stand)
-        .then(1) { it.color = Color.MAGENTA }
+        .then(1) { it.context["color"] = Color.MAGENTA }
         .then(2000, stand)
 
-    val cannonFirePattern = BehaviorPattern<BulletControlComponent>()
+    val cannonFirePattern = BehaviorPattern<UniversalPatternComponent>()
         .then(1) {
             val newBullets = List(50) { Bullet() }
                 .onEachIndexed { i, b ->
-                    b.behaviors.add(MoveComponent(cbMovePattern, b.body, i))
-                    b.behaviors.add(DisplayComponent(cbColorPattern, b.body, b.color, i))
+                    b.addBehavior(cbMovePattern, i)
+                    b.addBehavior(cbColorPattern)
+                    b.context["velocity"] = Point(0, 0)
                 }
-            bullets.addAll(newBullets)
+            objectsToAdd.addAll(newBullets)
         }
         .then(29, stand)
         .repeat(7)
@@ -66,44 +70,51 @@ fun initCannons() {
     val c2 = Cannon()
     c2.body.position = Point(100, 200)
     c2.behaviors.add(
-        MoveComponent(
-            BehaviorPattern<MoveComponent>()
+        UniversalPatternComponent(
+            BehaviorPattern<UniversalPatternComponent>()
                 .then(moveTo(120) {
                     (Player.body.position - c2.body.position) * 0.3f + c2.body.position
                 })
                 .then(60, stand)
                 .loop(),
-            c2.body
+            c2.context
         )
     )
-    val c2bMovPattern = BehaviorPattern<MoveComponent>()
+    val c2bMovPattern = BehaviorPattern<UniversalPatternComponent>()
         .then(1) {
-            it.position = c2.body.position
-            it.size = 10
-            it.velocity = Point(1, 0).rotate(PI / 3 * it.index + timer % 100).norm() * 1.4f
+            val body: BodyElement by it.context
+            body.position = c2.body.position
+            body.size = 10
+            it.context["velocity"] = Point(1, 0).rotate(PI / 3 * it.index + timer % 100).norm() * 1.4f
         }
         .then {
             moveForward(it)
             if (timer - it.createTime > 600)
                 return@then
-            if (it.position.x > 1300 || it.position.x < 10) {
-                it.velocity.x = -it.velocity.x
+            val body: BodyElement by it.context
+            val position = body.position
+            val velocity: Point by it.context
+            if (position.x > 1300 || position.x < 10) {
+                velocity.x = -velocity.x
             }
-            if (it.position.y > 800 || it.position.y < 10)
-                it.velocity.y = -it.velocity.y
+            if (position.y > 800 || position.y < 10)
+                velocity.y = -velocity.y
         }
-    val c2bColPattern = BehaviorPattern<DisplayComponent>()
-        .then(1) { it.color = Color.MAGENTA }
+    val c2bColPattern = BehaviorPattern<UniversalPatternComponent>()
+        .then(1) { it.context["color"] = Color.WHITE }
         .then(f = stand)
     c2.behaviors.add(
         SimplePatternComponent(
             BehaviorPattern<SimplePatternComponent>()
                 .then(1) {
-                    bullets.addAll(
+                    objectsToAdd.addAll(
                         List(6) { Bullet() }
                             .onEachIndexed { i, b ->
-                                b.addMoveComponent(c2bMovPattern, i)
-                                b.addDisplayComponent(c2bColPattern)
+                                b.addBehavior(c2bColPattern)
+                                b.addBehavior(c2bMovPattern, i)
+                                b.context.putAll(mapOf(
+                                    "velocity" to Point(0, 0)
+                                ))
                             }
                     )
                 }
@@ -119,60 +130,63 @@ fun initCannons() {
 
         val bulletsPattern = BehaviorPattern<UniversalPatternComponent>()
             .then(1) {
-                val bullet = it.context["object"] as Bullet
+                val cannon: Cannon by it.context
+                val velocity: Point by it.context
+                val body: BodyElement by it.context
+                var color: Color by it.context
+
                 val h = (timer.toFloat() / 5) % 360 / 360
-                bullet.color.color = Color.getHSBColor(h, 1f, 1f)
-                bullet.body.position = (it.context["cannon"] as Cannon).body.position
-                (it.context["velocity"] as Point).set(Point(1, 0)
+                color = Color.getHSBColor(h, 1f, 1f)
+                body.position = cannon.body.position
+                velocity.set(Point(1, 0)
                     .rotate((PI * floor(it.index.toDouble() / 5)) + PI / 30 * (it.index % 5 + timer / 3)))
             }
             .then {
-                (it.context["object"] as Bullet).body.position += it.context["velocity"] as Point
+                val velocity: Point by it.context
+                val body: BodyElement by it.context
+                body.position += velocity
             }
         val ricochetPattern = BehaviorPattern<UniversalPatternComponent>()
             .then(1) {
                 it.context["num"] = 1
             }
             .then {
-                val position = (it.context["body"] as BodyElement).position
-                val velocity = it.context["velocity"] as Point
-                val n = it.context["num"] as Int
-                if (n == 0)
+                val body: BodyElement by it.context
+                val position = body.position
+                val velocity: Point by it.context
+                var num: Int by it.context
+                if (num == 0)
                     return@then
                 if (position.x > 1480 || position.x < 10) {
                     velocity.x = -velocity.x
-                    it.context["num"] = n - 1
+                    num = num - 1
                 }
                 if (position.y > 800 || position.y < 10) {
                     velocity.y = -velocity.y
-                    it.context["num"] = n - 1
+                    num = num - 1
                 }
             }
         val firePattern = BehaviorPattern<UniversalPatternComponent>()
             .then(1) {
-                bullets.addAll(List(10) { Bullet() }
+                objectsToAdd.addAll(List(10) { Bullet() }
                     .onEachIndexed { i, b ->
-                        val comp = UniversalPatternComponent(bulletsPattern, i)
-                            .apply {
-                                context["object"] = b
-                                context["cannon"] = this@cannon
-                                context["velocity"] = Point(0, 0)
-                            }
-                        val comp2 = UniversalPatternComponent(ricochetPattern)
-                            .apply {
-                                context["body"] = b.body
-                                context["velocity"] = comp.context["velocity"] as Point
-                            }
-                        b.behaviors.add(comp)
-                        b.behaviors.add(comp2)
+                        b.context.putAll(
+                            mapOf(
+                                "cannon" to this@cannon,
+                                "velocity" to Point(0, 0)
+                            )
+                        )
+                        b.addBehavior(bulletsPattern, i)
+                        b.addBehavior(ricochetPattern)
                     })
             }
             .then(5, stand)
             .loop()
-        behaviors.add(UniversalPatternComponent(firePattern))
+        addBehavior(firePattern)
     }
-    c.behaviors.add(BulletControlComponent(cannonFirePattern, c.bulletsElement))
-    //cannons.add(c)
-    //cannons.add(c2)
+    c.addBehavior(cannonFirePattern)
+    cannons.add(c)
+    cannons.add(c2)
     cannons.add(c3)
+    gameObjects.addAll(cannons)
 }

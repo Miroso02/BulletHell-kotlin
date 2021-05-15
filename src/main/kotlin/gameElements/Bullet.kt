@@ -1,11 +1,22 @@
 package gameElements
 
-import gameElements.components.patternComponents.DisplayComponent
-import gameElements.patterns.bulletDisplayPattern
+import gameElements.patterns.bulletCleanupPattern
+import gameElements.patterns.bulletsDisplayPattern1
+import gameElements.patterns.playerBulletsCleanupPattern
+import java.awt.Color
 
-class Bullet : GameObject() {
+class Bullet(playerBullet: Boolean = false) : GameObject() {
     init {
-        displayComponent = DisplayComponent(bulletDisplayPattern, this.body, this.color)
-        behaviors.add(displayComponent)
+        addBehavior(bulletsDisplayPattern1)
+        addBehavior(if (playerBullet) playerBulletsCleanupPattern else bulletCleanupPattern)
+        context.putAll(
+            mapOf(
+                "size" to 5,
+                "color" to Color.WHITE,
+                "body" to this.body,
+                "graphics" to null,
+                "obj" to this
+            )
+        )
     }
 }

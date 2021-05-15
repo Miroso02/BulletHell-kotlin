@@ -1,5 +1,6 @@
 import gameElements.Bullet
 import gameElements.Cannon
+import gameElements.GameObject
 import gameElements.Player
 import java.awt.Color
 import java.awt.Graphics
@@ -8,10 +9,13 @@ import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.JFrame
 import javax.swing.JPanel
+import kotlin.ConcurrentModificationException
+import kotlin.collections.ArrayList
 
 val cannons = ArrayList<Cannon>().apply { add(Player) }
-val bullets = ArrayList<Bullet>()
-val playerBullets = ArrayList<Bullet>()
+val gameObjects = ArrayList<GameObject>()
+val objectsToAdd = ArrayList<GameObject>()
+val objectsToRemove = ArrayList<Bullet>()
 var timer = -1
 
 fun main() {
@@ -49,26 +53,14 @@ object MainFrame : JFrame() {
 
 fun updateScreen(g: Graphics2D) {
     try {
-        cannons.forEach { it.displayComponent.graphics = g; it.update() }
-        bullets.removeAll { it.body.isOffScreen() }
-        bullets.forEach {
-            it.displayComponent.graphics = g
-            it.update()
-            if (it.body.collides(Player.body))
-                Player.healthElement.health = 0
-        }
-        playerBullets.forEach {
-            it.displayComponent.graphics = g
+        gameObjects.forEach {
+            it.context["graphics"] = g
             it.update()
         }
-        playerBullets.removeAll {
-            it.body.isOffScreen() ||
-                    cannons.any { c ->
-                        if (c != Player && !c.healthElement.isDead && c.body.collides(it.body)) {
-                            c.healthElement.health--; true
-                        } else false
-                    }
-        }
+        gameObjects.removeAll(objectsToRemove)
+        gameObjects.addAll(objectsToAdd)
+        objectsToRemove.clear()
+        objectsToAdd.clear()
         timer++
     } catch (e: ConcurrentModificationException) {
         e.printStackTrace()
